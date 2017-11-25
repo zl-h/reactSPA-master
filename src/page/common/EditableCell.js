@@ -1,4 +1,5 @@
-import {Table, Input, Popconfirm, Select, Button} from 'antd';
+import {Table, Input, Popconfirm, Select, Button, Form} from 'antd';
+
 
 /**
  * 不可变的用变量
@@ -7,12 +8,15 @@ import {Table, Input, Popconfirm, Select, Button} from 'antd';
  * type 2 select
  * type 3 multiSelect
  * type 4 datetime
- * typo 5 date
+ * type 5 date
+ * type 6 时间戳（不可更改）
  * type 100 operation 操作组件（原生操作）
  * type 101 自定义操作组件
  */
+import {formatDateTime, openNotification} from "./commonFunction";
 import * as React from "react";
 
+const FormItem = Form.Item;
 class EditableCell extends React.Component {
 
     state = {
@@ -61,15 +65,14 @@ class EditableCell extends React.Component {
         /*console.log(e);
         const value = e.target.value;
         console.log(value);*/
-        // console.log("新值！",value);
+        console.log("新值！", value);
         this.setState({value});
-        this.props.onChange(value,1);
+        this.props.onChange(value, 1);
     }
 
     render() {
-
-        const {value, editable, type, initData, initDataKey, initDataValue} = this.state;
-        // console.log("列渲染",value,this.props);
+        var {value, editable, type, initData, initDataKey, initDataValue} = this.state;
+        // console.log("列渲染",type,this.props);
         if (type === 1) {
             return (
                 <div>
@@ -83,30 +86,85 @@ class EditableCell extends React.Component {
                             </div>
                             :
                             <div className="editable-row-text">
-                                {value.toString() || ' '}
+                                {typeof value !== "undefined" && value !== null ? value.toString() : ' '}
                             </div>
                     }
                 </div>
             );
-        } else if (type === 2) {
-            console.log(JSON.stringify(initData));
+        } else if (type === 2 || type === 3) {
+            console.log("select test,initData =", initData, initData.length, initDataKey, initDataValue, "value =", value);
+            var mutil = '-';
+            //如果是增加行新值，则不触发更新数据，触发会有bug，别人本来就没有值，触发会出错
+            if (value === null || typeof value === "undefined" || value === "") {
+                value = "";
+            }
+            if(type === 3){
+                mutil = 'multiple';
+                if(value === ""){
+                    value = [];
+                }
+                if(value instanceof Array){
+
+                }else {
+                    value = value.split(",");
+                }
+            }else {
+                if(value === "") {
+                    value = 'please select';
+                }//没默认值，怎么办
+                value = value.toString();
+            }
+            console.log(value);
+            //title={subData[initDataValue]}
             return (
-                <div>
-                    <Select onChange={e => this.handleChange(e)} disabled={!editable} defaultValue={value}
-                            style={{width: 120}}>
-                        {
-                            initData.map((subData) => {
-                                return (
-                                    <Select.Option key={subData[initDataKey]}
-                                                   value={subData[initDataKey]}>{subData[initDataValue]}</Select.Option>
-                                );
-                            })
-                        }
-                    </Select>
+                        <Select mode = {mutil}
+                                showSearch = {true}
+                                filterOption = {
+                                    (a,b)=>MyFilterOption(a,b)
+                                }
+                             style={{display:"inline"}}
+                                placeholder={"please select".toString()} onChange={e => this.handleChange(e)}
+                              disabled={!editable}
+                                defaultValue = {value}
+                                allowClear={true}>
+                            {
+                                initData.map((subData) => {
+                                    return (
+                                        <Select.Option key={subData[initDataKey].toString()}
+                                                       value={subData[initDataKey].toString()}>
+                                            {subData[initDataValue]}
+                                            </Select.Option>
+                                    );
+                                })
+                            }
+                        </Select>
+            );
+        } else if (type === 6) {
+            console.log("time test", initData, initDataKey, initDataValue, value);
+            var showvalue = null;
+            if (typeof value !== "undefined" && value !== null && value !== "") {
+                showvalue = formatDateTime(value);
+            } else {
+                value = formatDateTime(value);
+                this.handleChange(value);
+                showvalue = value;
+            }
+            return (
+                <div className="editable-row-text">
+                    {showvalue}
                 </div>)
+        } else {
+            openNotification("不支持的cell类型" + type);
         }
         ;
     }
 }
 
+
+export function MyFilterOption(value,select) {
+    console.log("MyFilterOption",select,value)
+    if(typeof select !== "undefined" && select.props.children.indexOf(value) >= 0){
+        return true;
+    }
+}
 export default EditableCell;

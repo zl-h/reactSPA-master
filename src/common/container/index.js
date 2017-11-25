@@ -5,17 +5,16 @@ import { allMenu } from '../utils/menu'
 import Top from './header'
 import Contents from './content'
 import Footer from './bottom'
-import './index.less'
-import { Provider, connect } from 'react-redux';
+import './index.less';
+import { connect } from 'react-redux';
 import {url} from "../utils/urlconfig";
-import {Component} from "react/lib/ReactBaseClasses";
 import {commonFetch} from "../../page/common/commonFunction";
 import {fetchActionFailure, fetchActionLoading, fetchActionSuccess} from "./LanguagecommonAction";
 
 const SubMenu = Menu.SubMenu;
 const { Sider } = Layout;
 
-class Container extends Component {
+class Container extends React.Component {
     state = {
         theme: 'dark',
         current: 'index',
@@ -23,8 +22,8 @@ class Container extends Component {
         mode: 'inline',  // 水平垂直展现
     }
     componentWillMount() {
-        console.log(this.props.menus);
-        console.log(this.state);
+        // console.log(this.props.menus);
+        // console.log(this.state);
         this.props.onButtonClick(this.props.menus);
     }
     changeTheme = (value) => {
@@ -66,8 +65,8 @@ class Container extends Component {
                   collapsible
                   collapsed={this.state.collapsed}
                   onCollapse={this.onCollapse}
-                  className="leftMenu"
-              >
+                  /*className="leftMenu"*/
+                  width = {200}>
                   {this.state.theme === 'light' ? <a href="https://github.com/MuYunyun/react-antd-demo" target='_blank' rel='noopener noreferrer'><Icon type="github" className="github" /></a> :
                       <a href="https://github.com/MuYunyun/react-antd-demo" target='_blank' rel='noopener noreferrer'><Icon type="github" className="github white" /></a> }
                   { this.state.theme === 'light' ? <span className="author">Huangzhili</span> : <span className="author white">Huangzhili</span> }

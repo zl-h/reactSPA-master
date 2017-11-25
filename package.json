@@ -1,19 +1,20 @@
 {
   "name": "antd-demo",
-  "remark":"端口自定义",
+  "remark": "端口自定义",
   "port": 3000,
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "antd": "2.13.9",
+    "antd": "^2.13.10",
     "babel": "^6.23.0",
     "babel-cli": "^6.24.1",
+    "fs-extra": "^4.0.2",
     "less": "^2.7.2",
     "less-loader": "^4.0.5",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "react-draft-wysiwyg": "^1.10.0",
+    "react-draft-wysiwyg": "^1.10.12",
     "react-redux": "^5.0.5",
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
@@ -48,7 +49,7 @@
     "eslint-plugin-import": "2.7.0",
     "eslint-plugin-jsx-a11y": "5.1.1",
     "eslint-plugin-react": "7.1.0",
-    "extract-text-webpack-plugin": "3.0.0",
+    "extract-text-webpack-plugin": "~3.0.2",
     "file-loader": "0.11.2",
     "fs-extra": "3.0.1",
     "gh-pages": "^0.12.0",
@@ -64,7 +65,7 @@
     "style-loader": "0.18.2",
     "sw-precache-webpack-plugin": "0.11.4",
     "url-loader": "0.5.9",
-    "webpack": "3.5.1",
+    "webpack": "^3.8.1",
     "webpack-dev-server": "2.7.1",
     "webpack-manifest-plugin": "1.2.1"
   },
@@ -74,7 +75,8 @@
     "test": "node scripts/test.js --env=jsdom",
     "predeploy": "node scripts/build.js",
     "deploy": "gh-pages -d build",
-    "stop": "npm stop"
+    "stop": "npm stop",
+    "installmy": "npm install"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -99,21 +101,7 @@
     },
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
-    ],
-    "moduleNameMapper123": {
-      "^react-native$": "react-native-web",
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/src/common/images",
-      "\\.(css|less|scss)$": "<rootDir>/src",
-      "components": "<rootDir>/src/common/components",
-      "container": "<rootDir>/src/common/container",
-      "conf": "<rootDir>/src/common/conf",
-      "images": "<rootDir>/src/common/images",
-      "pages": "<rootDir>/src/common/pages",
-      "utils": "<rootDir>/src/common/utils",
-      "data": "<rootDir>/src/server/data",
-      "actions": "<rootDir>/src/common/actions",
-      "reducers": "<rootDir>/src/common/reducers"
-    }
+    ]
   },
   "babel": {
     "presets": [

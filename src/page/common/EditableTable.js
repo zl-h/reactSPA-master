@@ -1,9 +1,6 @@
 import {Table, Input, Popconfirm, Select, Button} from 'antd';
 import * as React from "react";
 import "./common.less";
-import {
-    addRowForIndexUser, dealCellAction, dealCellActionDelete, editRowForIndexUser, SelectAllAction,
-} from "../index/language/LanguagecommonAction";
 import AdvancedSearchForm from "./AdvancedSearchForm";
 import EditableCell from "./EditableCell";
 import {combineJson} from "./commonFunction";
@@ -50,20 +47,26 @@ class EditableTable extends React.Component {
             addAction:this.props.addAction,
             editAction:this.props.editAction,
             getAction:this.props.getAction,
-            dealCellAction:dealCellAction,
             deleteAction:this.props.deleteAction,
-            dealCellActionDelete:dealCellActionDelete
+            addRowForIndexUser:this.props.addRowForIndexUser,
+            dealCellAction:this.props.dealCellAction,
+            dealCellActionDelete:this.props.dealCellActionDelete,
+            editRowForIndexUser:this.props.editRowForIndexUser,
+            SelectAllAction:this.props.SelectAllAction
         }
     }
 
     renderColumns(data, index, key, text, type, initData, initDataKey, initDataValue) {
-        // console.log("渲染列" ,"data",data,index,key,data[index][key],"text",text,initData);
-        if(data[index][key] === null || typeof data[index][key]  === 'undefined')return data[index][key];
+        // console.log("渲染列" ,"data",data,type,text,initData);
+        if(data[index][key] === null || typeof data[index][key]  === 'undefined'){
+            console.log("null undefined",type,data)
+            return data[index][key];
+        }
         var {editable, status} = data[index][key];
         // console.log("是否可编辑" + editable)
-        if (typeof editable === 'undefined') {
+      /*  if (typeof editable === 'undefined') {
             return text;
-        }
+        }*/
         return (
             <div>
                 <EditableCell
@@ -110,7 +113,7 @@ class EditableTable extends React.Component {
     edit(index) {
         // console.log(this)
         const {data} = this.props;
-        this.props.customWayActionClick(data,index,editRowForIndexUser);
+        this.props.customWayActionClick(data,index,this.action.editRowForIndexUser);
         //设置缓存值等于真实值
         Object.keys(data[index]).forEach((key) => {
             if(typeof data[index][key].value !== "undefined")
@@ -124,7 +127,7 @@ class EditableTable extends React.Component {
     delete(index) {
         const {data} = this.props;
 
-        var id = data[index].key;
+        var id = data[index].key.value;
         if(id > 0){
             console.log("执行删除",data,index);
             this.action.deleteAction.requestBody = {id:id};
@@ -133,12 +136,9 @@ class EditableTable extends React.Component {
             console.log("不执行删除，如果时新增还没入库得，则从界面上删除",data,index);
             this.props.customWayActionClick(data,index,this.action.dealCellActionDelete);
         }
-
-
         //设置缓存值等于真实值
         //编辑，需要传参调用
         // this.setState({data});
-
     }
 
     editDone(index, type) {
@@ -155,7 +155,7 @@ class EditableTable extends React.Component {
         this.action.dealCellAction.operatetype = type;
         this.action.dealCellAction.index = index;
         //首先把cell状态改变
-        this.props.customWayActionClick(data,index,this.action.dealCellAction);
+        // this.props.customWayActionClick(data,index,this.action.dealCellAction);
 
         if(type === "save"){
             //将列的最新值放在缓存值里
@@ -164,27 +164,29 @@ class EditableTable extends React.Component {
                     data[index][key].value = data[index][key].cacheValue;
             });
             //判断是修改还是增加，不要耦合到一起 要分开
-            if(data[index].key > 0){
+            if(data[index].key.value > 0){
                 //修改
+                this.action.editAction.props = this.props;
                 this.props.customWayActionClick(data,json,this.action.editAction);
             }else {
                 //增加,尽量把参数放在action里
                 this.action.addAction.index = index;
+                this.action.addAction.props = this.props;;
                 this.props.customWayActionClick(data,index,this.action.addAction);
             }
+        }else if(type === "cancel"){
+            this.props.customWayActionClick(data,index,this.action.dealCellAction);
         }
-
         //列编辑完成之后，触发数据更新
         //数据更新之后没有触发列的变化
-
     }
 
     //增加，先增加一个空的，让别人去点击编辑，再保存就ok
     handleAdd = () => {
         console.log("调用自定义的action--add",this.props);
         var {  data } = this.props;
-        addRowForIndexUser.current = this.config.current;
-       this.props.customWayActionClick(data,0,addRowForIndexUser);
+        this.action.addRowForIndexUser.current = this.config.current;
+       this.props.customWayActionClick(data,0,this.action.addRowForIndexUser);
     }
 
     tableOnChange = (pagination, filters, sorter) => {
@@ -205,8 +207,8 @@ class EditableTable extends React.Component {
 
     onSelectChange = (selectedRowKeys) => {
         console.log('selectedRowKeys changed: ', selectedRowKeys);
-        SelectAllAction.selectedRowKeys = selectedRowKeys;
-        this.props.customWayActionClick(null,null,SelectAllAction);
+        this.action.SelectAllAction.selectedRowKeys = selectedRowKeys;
+        this.props.customWayActionClick(null,null,this.action.SelectAllAction);
     }
 
     render() {
@@ -219,7 +221,8 @@ class EditableTable extends React.Component {
             Object.keys(item).forEach((key) => {
                 // console.log(item[key])
                 // console.log(item[key].value)
-                obj[key] = key === 'key' ? item[key] :item[key] === null?item[key] : item[key].value;
+                obj[key] = item[key].value;
+                // obj[key] = key === 'key' ? item[key] :item[key] === null?item[key] : item[key].value;
             });
             // console.log(obj);
             return obj;
@@ -235,20 +238,20 @@ class EditableTable extends React.Component {
                 dataIndex: item.dataIndex,
                 // width: item.width
             };
-            if(item.componentType < 100){
+/*            if(item.componentType < 100){
                 col.sorter = (a, b) =>{
                     // console.log("a",a,"b",b,"item",item);
                     a[item.dataIndex] - b[item.dataIndex]
                 } ;
-            }
+            }*/
             if (item.componentType === 1) {
-                col.render = (text, record, index) => this.renderColumns(this.props.data, index, item.title, text, 1,record);
-            }else if(item.componentType === 2){
-                col.render = (text, record, index) => this.renderColumns(this.props.data, index, item.title, text, 1,jsonData[item.listKey], item.dataKey, item.valueKey);
+                col.render = (text, record, index) => this.renderColumns(this.props.data, index, item.dataIndex, text, 1,record);
+            }else if(item.componentType === 2 || item.componentType === 3){
+                col.render = (text, record, index) => this.renderColumns(this.props.data, index, item.dataIndex, text, item.componentType,jsonData[item.listKey], item.dataKey, item.valueKey);
             }else if(item.componentType === 100){
                 col.render = (text, record, index) => {
                     // console.log(data[index]);
-                    const {editable} = data[index].id;
+                    const {editable} = data[index].key;
                     return (
                         <div className="editable-row-operations">
                             {
@@ -283,8 +286,8 @@ class EditableTable extends React.Component {
                     );
                 }
             }else {
-                console.log("不支持的组件,默认为text组件");
-                col.render = (text, record, index) => this.renderColumns(this.props.data, index, item.title, text, 1)
+                console.log("根据类型自动选择",item.componentType);
+                col.render = (text, record, index) => this.renderColumns(this.props.data, index, item.dataIndex, text, item.componentType,record)
             }
             return col;
         });
@@ -295,7 +298,7 @@ class EditableTable extends React.Component {
         return(
         <div>
             {/*添加搜索框*/}
-            <AdvancedSearchForm columns = {columns} searchEventClick={formData => this.searchEventClick(formData)}/>
+            <AdvancedSearchForm columns = {columns} jsonData = {jsonData} searchEventClick={formData => this.searchEventClick(formData)}/>
 {/*    onChange={(value,changeType) => this.handleChange(key, index, value,changeType)}*/}
             {addButtonFlag === true?<Button className="editable-add-btn" onClick={this.handleAdd}>Add</Button>:""}
             {MyButton.map((item) => {

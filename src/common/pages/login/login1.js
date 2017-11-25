@@ -1,7 +1,6 @@
 import React from 'react'
-import {Form, Icon, Input, Button, Checkbox, Row, Layout, Spin,Select} from 'antd'
+import {Form, Icon, Input, Spin,Select} from 'antd'
 import {url} from '../../utils/urlconfig'
-import createHistory from 'history/createHashHistory';
 import {commonFetch} from "../../../page/common/commonFunction";
 import {connect} from "react-redux";
 import {
@@ -11,7 +10,6 @@ import {
 
 require("./login1/css/style.css");
 const FormItem = Form.Item;
-const history = createHistory();
 
 class LoginIn extends React.Component {
 
@@ -47,36 +45,45 @@ class LoginIn extends React.Component {
         this.props.changeLanguage(json);
     }
 
+  /*  componentDidMount() {
+        super.componentDidMount();
+        console.log("跳转",this.props);
+        const {loginFlag} = this.props;
+        if(loginFlag === true){
+
+            this.props.history.push("../index");
+        }
+    }*/
+   componentWillMount(){
+
+   }
+
+
     render() {
         console.log("this",this);
         const {loading,languageList,translate,defaultLanguage,loginFlag,languageDictList} = this.props;
         const { getFieldDecorator } = this.props.form;
-        if(loginFlag === true){
+/*        if(loginFlag === true){
             this.props.history.push("../index");
-        }
+        }*/
         return (
             <div className="login-div">
                 <br/>
                 <br/>
                 <br/>
-                <br/>
-                <br/>
-            <h1 style={{color:"black"}}></h1>
-                <Form onSubmit={this.handleSubmit} className="login-form" id = "loginFormId">
+                <Form onSubmit={this.handleSubmit} style={{margin:"6% auto 0 auto"}} className="login-form" id = "loginFormId">
                 <div className="close"> </div>
                 <div className="head-info">
                     <label className="lbl-1"> </label>
                     <label className="lbl-2"> </label>
                     <label className="lbl-3"> </label>
                 </div>
-                <div className="clear"></div>
+                <Spin spinning={loading}>
                 <div className="avtar">
                     <img src={require("./login1/images/avtar.png")} />
                 </div>
-                    <br/>
-                    <Spin spinning={loading}>
                     <FormItem>
-                        <div  style={{align:"center"}}><h1 style={{color:"white"}}>{getDictByCode("000001",languageDictList)}</h1></div>
+                        <h1 style={{color:"white"}}>{getDictByCode("000001",languageDictList)}</h1>
                     </FormItem>
                     <FormItem>
                         {getFieldDecorator('username', {
@@ -111,23 +118,28 @@ class LoginIn extends React.Component {
                                 </Select>
                             )}
                         </FormItem>
-
-                    {/*<input type="text" className="text" value=""  placeholder="Username" />*/}
-                        {/*<div className="key">*/}
-                            {/*<input type="password" value=""  placeholder="Password" />*/}
-                        {/*</div>*/}
                 <div className="signin">
                     <input type="submit"  value={getDictByCode("000005",languageDictList)} />
                 </div>
                     </Spin>
-            {/*</div>*/}
                 </Form>
             </div>)
     }
 
     componentDidMount(){
-        //初始化
+        //初始化，组件渲染后只会调用一次
         this.props.init();
+
+    }
+
+    componentDidUpdate(){
+        //组件渲染后只会调用一次componentDidMount,其余都调用componentDidUpdate
+        console.log("跳转",this.props);
+        const {loginFlag} = this.props;
+        if(loginFlag === true){
+            console.log("跳转");
+            this.props.history.push("../index");
+        }
     }
 
 };

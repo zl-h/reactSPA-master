@@ -10,9 +10,9 @@ import {
     LanguageEditDataActionSuccess,
     LanguageGetDataAction, LanguageGetDataActionFailure, LanguageGetDataActionLoading, LanguageGetDataActionSuccess,
     LanguageMyButtonAction
-} from "./LanguageAction";
+} from "./MenuAction";
 import {url} from "../../../common/utils/urlconfig";
-import {commonFetch, openNotification} from "../../common/commonFunction";
+import {commonFetch, getCookieByName, openNotification, trim} from "../../common/commonFunction";
 import { Modal } from 'antd';
 const confirm = Modal.confirm;
 
@@ -23,12 +23,12 @@ export function executeLanguage(data, index, action){
         if(action.type === LanguageGetDataAction.type){
             //加载用户数据
             console.log("加载用户数据");
-            dispatch(commonFetch(url.index_language_getTableData_url,action.requestBody,LanguageGetDataActionLoading,LanguageGetDataActionSuccess,LanguageGetDataActionFailure));
+            dispatch(commonFetch(url.index_menu_getTableData_url,action.requestBody,LanguageGetDataActionLoading,LanguageGetDataActionSuccess,LanguageGetDataActionFailure));
         }
         else if(action.type === LanguagedeleteDataAction.type){
             //加载用户数据
             console.log("删除语言数据");
-            dispatch(commonFetch(url.index_language_removeData_url,action.requestBody,LanguagedeleteDataActionLoading,LanguagedeleteDataActionSuccess,LanguagedeleteDataActionFailure));
+            dispatch(commonFetch(url.index_menu_removeData_url,action.requestBody,LanguagedeleteDataActionLoading,LanguagedeleteDataActionSuccess,LanguagedeleteDataActionFailure));
         }
         else if(action.type === LanguageEditDataAction.type){
             //加载用户数据
@@ -41,7 +41,7 @@ export function executeLanguage(data, index, action){
             Object.keys(item).forEach((key) => {
                 json[key] =  item[key].value;
             });
-            dispatch(commonFetch(url.index_language_editData_url,json,LanguageEditDataActionLoading,LanguageEditDataActionSuccess,LanguageEditDataActionFailure));
+            dispatch(commonFetch(url.index_menu_editData_url,json,LanguageEditDataActionLoading,LanguageEditDataActionSuccess,LanguageEditDataActionFailure));
         }
         else if(action.type === LanguageAddDataAction.type){
             //加载用户数据
@@ -51,14 +51,41 @@ export function executeLanguage(data, index, action){
             Object.keys(item).forEach((key) => {
                     json[key] =  item[key].value;
             });
-            if(typeof item.userLanguage.value === "undefined" || item.userLanguage.value === ""){
-                openNotification("语言必填");
+            json.createUserId = getCookieByName("userId");
+
+            /**
+             * 校验对应的列是否没填写值
+             */
+            var flag = true;
+            var emptyCol = "";
+            action.props.columns.map((col)=>{
+               if(col.componentType < 100 && col.componentType > 0){
+                   if(item[col.dataIndex].value === "" || item[col.dataIndex].value === null || typeof item[col.dataIndex].value === "undefined"){
+                       console.log("item",item,col.dataIndex)
+                       if(flag === false){
+                           emptyCol = emptyCol + ",";
+                       }
+                       emptyCol = emptyCol + col.title;
+                       flag = false;
+                   }
+               }
+            });
+
+            if(isNaN(item.sort.value) === true){
+                openNotification("排序字段必须为数字" + item.sort.value);
                 return ;
             }else {
-                 dispatch(commonFetch(url.index_language_addData_url,json,LanguageAddDataActionLoading,LanguageAddDataActionSuccess,LanguageAddDataActionFailure));
+
+            }
+
+            if(flag !== true) {
+                openNotification("您有未填字段" + emptyCol);
+                return ;
+            }else {
+                dispatch(commonFetch(url.index_menu_addData_url,json,LanguageAddDataActionLoading,LanguageAddDataActionSuccess,LanguageAddDataActionFailure));
             }
         }
-      /*  else if(action.type === LanguagedeleteDataAction.type){
+       /* else if(action.type === LanguagedeleteDataAction.type){
             //加载用户数据
             console.log("删除语言数据","action",action,"data",data,"index",index);//到底是编辑还是添加交由后台去处理
             /!*            LanguageEditDataActionLoading.index = LanguageEditDataAction.index;
@@ -74,7 +101,7 @@ export function executeLanguage(data, index, action){
                 openNotification("该记录不可删除");
                 return false;
             }else {
-                dispatch(commonFetch(url.index_language_removeData_url,json,LanguagedeleteDataActionLoading,LanguagedeleteDataActionSuccess,LanguagedeleteDataActionFailure));
+                dispatch(commonFetch(url.index_group_removeData_url,json,LanguagedeleteDataActionLoading,LanguagedeleteDataActionSuccess,LanguagedeleteDataActionFailure));
             }
         }*/
         else if(action.type === LanguageMyButtonAction.type){
@@ -94,7 +121,7 @@ export function executeLanguage(data, index, action){
                     title: '确认要批量删除吗?',
                     content: '批量删除后不可恢复',
                     onOk() {
-                        dispatch(commonFetch(url.index_language_removeData_url,json,LanguagedeleteDataActionLoading,LanguagedeleteDataActionSuccess,LanguagedeleteDataActionFailure));
+                        dispatch(commonFetch(url.index_menu_removeData_url,json,LanguagedeleteDataActionLoading,LanguagedeleteDataActionSuccess,LanguagedeleteDataActionFailure));
                        /* return new Promise((resolve, reject) => {
                             setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
                         }).catch(() => console.log('Oops errors!'));*/

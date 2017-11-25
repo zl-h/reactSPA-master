@@ -9,31 +9,27 @@ import WrappedAdvancedSearchForm from "../page/common/AdvancedSearchForm";
 import MyUserComponment from "../page/index/language/UserComponment";
 import IndexUserPage1 from "../page/index/language/test_1";
 import Language from "../page/index/language/Language";
+import ChangePasswordForm from "../page/index/ChangePassword/ChangePassword";
 
-const customHistory = createBrowserHistory()
+// const customHistory = createBrowserHistory()hashHistory={customHistory}
 
 const routes = (
-  <HashRouter history={customHistory} >
+  <HashRouter>
     <div>
         <Switch>
             <AuthRoute path="/index"  component={MyContainer}/>
             <Route path="/" component={LoginIn} exact />
             <Route path="/test"  component={IndexUserPage}/>
             <Route path="/test1"  component={WrappedAdvancedSearchForm}/>
-            <Route path="/test2"  component={IndexUserPage}/>
             <Route path="/test3"  component={Language}/>
 
-        {/*//设置authFlag为0即不拦截，不做处理*/}
-        <Route path="/login" authFlag = "0" component={LoginIn}/>
-       {/* <Redirect from="/redirectLogin" to="/login" />*/}
-       {/* <Redirect path="/redirectLogin" component={LoginIn} />*/}
-       {/* <AuthRoute path="/login123" component={LoginIn}/>*/}
-       {/* <Redirect path="/login" component={LoginIn} />*/}
-        {/*<TestAuth path="/index1" component={Container} />*/}
-        {/*<Redirect from='*' to='/login' />*/}
+            <Route path="/index/changePassword"  component={ChangePasswordForm}/>
+            {/*//设置authFlag为0即不拦截，不做处理*/}
+            <Route path="/login" authFlag = "0" component={LoginIn}/>
+
         </Switch>
     </div>
   </HashRouter>
-)
+);
 
 export default routes;

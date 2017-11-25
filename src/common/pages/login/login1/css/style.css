@@ -46,6 +46,23 @@ img{max-width:100%;}
 	-moz-transition: 0.1s all;
 	-o-transition: 0.1s all;
 }
+
+/*#parent {*/
+	/*position: relative;*/
+	/*width:100%;*/
+/*}*/
+/*.login-div {*/
+	/*position: absolute;*/
+	/*top: 0;*/
+	/*bottom: 0;*/
+	/*left: 0;*/
+	/*right: 0;*/
+	/*width: 100%;*/
+	/*height: 30%;*/
+	/*margin: auto;*/
+/*}*/
+
+
 /*--close--*/
 .close{
 background: url('../images/close.png') no-repeat 0px 0px;
@@ -64,16 +81,17 @@ background: url('../images/close.png') no-repeat 0px 0px;
 h1 {
 	font-family: 'Exo 2', sans-serif;
 	  text-align: center;
-	  padding-top: 4em;
+	  padding-top: 1em;
 	  font-weight: 400;
 	  color: #2B2B36;
 	  font-size: 2em;
 }
 .login-form {
-	background: #606070;
+
+	background: #0896a7;
 	position: relative;
 	width: 30%;
-	margin: 3% auto 0 auto;
+	margin: 5% auto 0 auto;
 	text-align: center;
 	border-radius: 15px;
 	-webkit-border-radius: 15px;
@@ -147,7 +165,7 @@ input[type="submit"]{
   color: #fff;
   outline: none;
   border: none;
-  background: #9ba792;
+  background: #16a744;
 /*  width: 90%;
   padding: 10px 0;
   border-bottom-left-radius: 15px;

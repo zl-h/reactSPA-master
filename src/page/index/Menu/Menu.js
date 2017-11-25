@@ -1,19 +1,19 @@
 import * as React from "react";
 import {Form} from "antd";
 import Button from "antd/es/button/button";
-import EditableTable, {New} from "../../common/EditableTable";
+import EditableTable from "../../common/EditableTable";
 import {
     LanguageAddDataAction, LanguagedeleteDataAction, LanguageEditDataAction,
     LanguageGetDataAction, LanguageMyButtonAction
-} from "./LanguageAction";
+} from "./MenuAction";
 import {
     addRowForIndexUser, dealCellAction, dealCellActionDelete, editRowForIndexUser,
     SelectAllAction
-} from "./LanguagecommonAction";
-import {executeLanguage} from "./languageFunction";
+} from "./MenucommonAction";
+import {executeLanguage} from "./MenuFunction";
 import {connect} from "react-redux";
 
-class Language extends React.Component {
+class Menu extends React.Component {
 
     componentWillMount(){
      /*   console.log("UserComponment初始化开始");
@@ -57,9 +57,7 @@ class Language extends React.Component {
                 dealCellActionDelete = {dealCellActionDelete}
                 editRowForIndexUser = {editRowForIndexUser}
                 SelectAllAction = {SelectAllAction}
-
-
-        />
+            />
         </div>);
     }
 }
@@ -73,13 +71,13 @@ function mapStateToProps(state){
     console.log("state",state);
     // console.log("渲染之前的状态=》属性");
     return {
-        data: state.CommonReduce.LanguageReducer.data,
-        columns: state.CommonReduce.LanguageReducer.columns,
-        jsonData: state.CommonReduce.LanguageReducer.jsonData,
-        count : state.CommonReduce.LanguageReducer.count,
-        loading : state.CommonReduce.LanguageReducer.loading,
-        refreshFlag:state.CommonReduce.LanguageReducer.refreshFlag,
-        selectedRowKeys:state.CommonReduce.LanguageReducer.selectedRowKeys
+        data: state.CommonReduce.MenuReducer.data,
+        columns: state.CommonReduce.MenuReducer.columns,
+        jsonData: state.CommonReduce.MenuReducer.jsonData,
+        count : state.CommonReduce.MenuReducer.count,
+        loading : state.CommonReduce.MenuReducer.loading,
+        refreshFlag:state.CommonReduce.MenuReducer.refreshFlag,
+        selectedRowKeys:state.CommonReduce.MenuReducer.selectedRowKeys
     };
 };
 
@@ -95,7 +93,7 @@ function mapDispatchToProps(dispatch){
 // export  const New = EditableTable;
 
 //连接组件
-Language = connect(mapStateToProps, mapDispatchToProps)(Language);
+Menu = connect(mapStateToProps, mapDispatchToProps)(Menu);
 
-Language =  Form.create()(Language);
-export default Language;
+Menu =  Form.create()(Menu);
+export default Menu;

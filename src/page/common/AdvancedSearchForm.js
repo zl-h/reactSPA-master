@@ -1,6 +1,7 @@
-import { Form, Row, Col, Input, Button, Icon } from 'antd';
+import {Form, Row, Col, Input, Button, Icon, Select} from 'antd';
 import './common.less'
 import * as React from "react";
+import {MyfilterOption, MyFilterOption} from "./EditableCell";
 
 const FormItem = Form.Item;
 
@@ -19,7 +20,7 @@ class AdvancedSearchForm extends React.Component {
         });
 
         //此处获取表单数据
-        console.log("把事件及必须参数传递给父组件",this.props.form.validateFields);
+        // console.log("把事件及必须参数传递给父组件",this.props.form.validateFields);
         this.props.searchEventClick(requestBody);
     }
 
@@ -33,8 +34,9 @@ class AdvancedSearchForm extends React.Component {
     }
 
     // To generate mock Form.Item
-    getFields(columns) {
-        const count = this.state.expand ? 100 : 7;
+    getFields(columns,jsonData) {
+        console.log("columns,jsonData",columns,jsonData);
+        const count = this.state.expand ? 100 : 6;
         const { getFieldDecorator } = this.props.form;
         const formItemLayout = {
             labelCol: { span: 5 },
@@ -44,6 +46,36 @@ class AdvancedSearchForm extends React.Component {
         for (let i = 0; i < columns.length; i++) {
             if(columns[i].componentType === 100 || columns[i].componentType === 101){
 
+
+
+            } else if(columns[i].componentType === 2 || columns[i].componentType === 3){
+              const {dataKey,valueKey,listKey} =  columns[i];
+                //多select，默认全选
+                children.push(
+                    <Col span={8} key={i} style={{ display: i < count ? 'block' : 'none' }}>
+                        <FormItem  {...formItemLayout} label={columns[i].title}>
+                            {getFieldDecorator(columns[i].dataIndex)(
+                                /*placeholder="placeholder"*/
+                                 <Select allowClear ={true} mode="multiple"
+                                         placeholder={"please select".toString()}
+                                         filterOption = {
+                                             (a,b)=>MyFilterOption(a,b)
+                                         }
+                                         /*initialValue ={1}*/>
+                                    {
+                                        jsonData[listKey].map((subData) => {
+                                            // openNotification(JSON.stringify(subData)+subData[dataKey]+subData[valueKey]);
+                                            return   (
+                                               <Select.Option key={subData[dataKey].toString()}
+                                                               value={subData[dataKey].toString()}>{subData[valueKey]}</Select.Option>
+                                            );
+                                        })
+                                    }
+                                </Select>
+                            )}
+                        </FormItem>
+                    </Col>
+                );
             }else {
                 children.push(
                     <Col span={8} key={i} style={{ display: i < count ? 'block' : 'none' }}>
@@ -54,9 +86,10 @@ class AdvancedSearchForm extends React.Component {
                             )}
                         </FormItem>
                     </Col>
-                );
+                )
             }
         }
+        console.log("test getFields");
         return children;
     }
 
@@ -69,19 +102,19 @@ class AdvancedSearchForm extends React.Component {
         });
 
         //此处获取表单数据
-        console.log("把事件及必须参数传递给父组件",this.props.form.validateFields);
+        // console.log("把事件及必须参数传递给父组件",this.props.form.validateFields);
         this.props.searchEventClick(requestBody);
     }
 
 
     render() {
-        console.log("渲染高级搜索" ,this);
+         console.log("渲染高级搜索" ,this);
         return (
             <Form
                 className="ant-advanced-search-form"
                 onSubmit={this.handleSearch}
             >
-                <Row gutter={40}>{this.getFields(this.props.columns)}</Row>
+                <Row gutter={40}>{this.getFields(this.props.columns,this.props.jsonData)}</Row>
                 <Row>
                     <Col span={24} style={{ textAlign: 'right' }}>
                         <Button type="primary" htmlType="submit">Search</Button>

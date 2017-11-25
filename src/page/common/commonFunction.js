@@ -10,15 +10,22 @@ import {executeLanguage} from "../index/language/languageFunction";
  * @param bodyType body数据类型
  * @returns {function(*)}
  */
-export function commonFetch(url, body,fetchActionLoading,fetchActionSuccess,fetchActionFailure,bodyType) {
+export function commonFetch(url, body,fetchActionLoading,fetchActionSuccess,fetchActionFailure,method) {
     //无奈，post提交json一直失败。。
     // let formData = new FormData();
     //用searchParams处理json
     var searchParams = new URLSearchParams();
+    var count = 0;
     if(body !== null && typeof body !== "undefined"){
         Object.keys(body).forEach((key) => {
             if(body[key] !== null && body[key] !== "" && typeof body[key] !== "undefined"){
                 // formData.append(key,body[key]);
+                if(count === 0){
+                    url = url+"?"+key+"="+body[key];
+                }else {
+                    url = url+"&"+key+"="+body[key];
+                }
+                count = count + 1;
                 searchParams.set(key,body[key]);
             }
         });
@@ -28,7 +35,7 @@ export function commonFetch(url, body,fetchActionLoading,fetchActionSuccess,fetc
         return fetch(url, {
             credentials: 'include',
             mode: "cors",
-            method: 'POST',
+            method: 'get',
             headers: {
                 // 'Accept': 'application/json, text/javascript, */*; q=0.01',
                 "Content-type": "application/x-www-form-urlencoded;charset=UTF-8",//"user_name="+n+"&password="+p+"&default_lang="+11
@@ -37,7 +44,7 @@ export function commonFetch(url, body,fetchActionLoading,fetchActionSuccess,fetc
                 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE'
             },
             cache: 'reload',
-            body: searchParams
+            // body: searchParams
             //JSON.stringify({"user_name":n,"password":p,"default_lang":1})
         }).then(response => {
             console.log("发起fetch请求",url,body,response);
@@ -52,7 +59,6 @@ export function commonFetch(url, body,fetchActionLoading,fetchActionSuccess,fetc
                         fetchActionFailure.status = response.status;
                         fetchActionFailure.data = response.data;
                         return dispatch(fetchActionFailure);
-
                     }
                 });
             } else {
@@ -116,7 +122,7 @@ export function openNotification(message,description,type,duration){
     }else if(type === 4){
         notificationType = "error";
     }else {
-        notificationType = "success";
+        notificationType = "warning";
     }
     if(duration === null){
         duration = 2;
@@ -143,6 +149,43 @@ export function combineJson(json1,json2) {
     Object.keys(json2).forEach((item) => {
         json[item] = json2[item];
     });
-
     return json;
+}
+
+export function formatDateTime(inputTime) {
+    var date = new Date(inputTime);
+    if(inputTime === null || inputTime === ""){
+        date = new Date();
+    }
+    var y = date.getFullYear();
+    var m = date.getMonth() + 1;
+    m = m < 10 ? ('0' + m) : m;
+    var d = date.getDate();
+    d = d < 10 ? ('0' + d) : d;
+    var h = date.getHours();
+    h = h < 10 ? ('0' + h) : h;
+    var minute = date.getMinutes();
+    var second = date.getSeconds();
+    minute = minute < 10 ? ('0' + minute) : minute;
+    second = second < 10 ? ('0' + second) : second;
+    return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+};
+
+//字符串去空格
+export function trim(str) {
+    if(str === null || typeof str === "undefined"){
+        return "";
+    }
+    str = str.match(/\S+(?:\s+\S+)*/);
+    return str ? str[0] : '';
+}
+
+//取出cookie里的值
+export function getCookieByName(name)
+{
+    var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+    if(arr=document.cookie.match(reg))
+        return unescape(arr[2]);
+    else
+        return null;
 }

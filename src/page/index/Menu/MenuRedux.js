@@ -10,12 +10,12 @@ import {
     LanguageEditDataActionFailure, LanguageGetDataActionLoading, LanguageGetDataActionSuccess,
     LanguageGetDataActionFailure, LanguagedeleteDataActionLoading, LanguagedeleteDataActionSuccess,
     LanguagedeleteDataActionFailure, LanguageMyButtonAction
-} from "./LanguageAction";
+} from "./MenuAction";
 
 import {
     addRowForIndexUser, changeCellForIndexUser, dealCellAction, dealCellActionDelete, editRowForIndexUser,
     saveOrCancleRowForIndexUser, SelectAllAction
-} from "./LanguagecommonAction";
+} from "./MenucommonAction";
 
 import {getEditableByKeyAndColumns} from "../../common/EditableTable";
 import {openNotification} from "../../common/commonFunction";
@@ -30,55 +30,13 @@ import {openNotification} from "../../common/commonFunction";
 
 //提供初始值
 export const initState ={
-    data: [{
-        key: {
-            editable: false,
-            value: '0',
-        },
-        id: {
-            editable: false,
-            value: '1 King 0',
-        },
-        name: {
-            editable: false,
-            value: 'Edward King 0',
-        },
-        age: {
-            editable: false,
-            value: '32',
-        },
-        address: {
-            value: '1',
-            editable: false
-        },
-    }],
-    columns :[{
-        title: 'name',
-        dataIndex: 'name',
-        width: '10%',
-        componentType : 1,
-        action : '100000',
-        editable:true
-    }, {
-        title: 'Test',
-        dataIndex: 'Test',
-        width: '10%',
-        componentType : 100,
-        action : '100000',
-        editable:true
-    },{
-        title: 'Test1',
-        dataIndex: 'Test1',
-        width: '10%',
-        componentType : 101,
-        action : '100000',
-        editable:true
-    }],
+    data: [],
+    columns :[],
     jsonData:{}
 };
 
 //计算新状态
-export const LanguageReducer = (state = initState, action) => {
+export const MenuReducer = (state = initState, action) => {
     // console.log("CommonReducer" + JSON.stringify(action) + JSON.stringify(state));
 
     switch (action.type) {
@@ -256,7 +214,7 @@ export const LanguageReducer = (state = initState, action) => {
                 // console.log("col",col);
                 columns = [...columns, col];
             });
-            // console.log("columns",columns)
+            //console.log("action",action)
             return {
                 columns: columns,
                 data:dataSource,
